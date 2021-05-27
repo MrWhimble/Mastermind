@@ -1,42 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RollerScript : MonoBehaviour
 {
-    public int rollerIndex { get; private set; }
+    [SerializeField] private Transform tileParent;
+    [SerializeField] private GameObject tilePrefab;
+    [SerializeField] private float tileHeight;
+
+    private int rollerIndex;
+    public int RollerIndex { 
+        get { 
+            return rollerIndex; 
+        }
+    }
+
     private int maxRollerIndex = 6;
     [SerializeField] private float rollerSpeed;
 
     private GameObject colorPrefab;
-    private Transform[] colorTransforms;
-    private float[] colorYPositions;
+    private RectTransform[] tileTransforms;
+    private float[] tileYPositions;
 
     // Start is called before the first frame update
-    void Start()
+    public void Initialize(Color[] colors)
     {
-        colorTransforms = new Transform[transform.childCount];
-        colorYPositions = new float[transform.childCount];
-        for (int i = 0; i < transform.childCount; i++) 
+        maxRollerIndex = colors.Length;
+        tileTransforms = new RectTransform[maxRollerIndex];
+        tileYPositions = new float[maxRollerIndex];
+        for (int i = 0; i < maxRollerIndex; i++) 
         {
-            colorTransforms[i] = transform.GetChild(i);
-            colorYPositions[i] = i;
+            GameObject go = Instantiate(tilePrefab, tileParent);
+            tileTransforms[i] = go.GetComponent<RectTransform>();
+            tileTransforms[i].GetChild(0).GetComponent<Image>().color = colors[i];
+            tileYPositions[i] = i;
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        for (int i = 0; i < colorTransforms.Length; i++)
+        for (int i = 0; i < tileTransforms.Length; i++)
         {
-            colorYPositions[i] = Mathf.Lerp(colorYPositions[i], GetRollerIndexWithOffset(i), rollerSpeed * Time.deltaTime);
-            colorTransforms[i].localPosition = new Vector2(colorTransforms[i].localPosition.x, colorYPositions[i]);
+            tileYPositions[i] = Mathf.Lerp(tileYPositions[i], (GetRollerIndexWithOffset(i - 3) + 2) * tileHeight, rollerSpeed * Time.deltaTime);
+            tileTransforms[i].localPosition = new Vector2(tileTransforms[i].localPosition.x, tileYPositions[i]);
         }
     }
 
     public void ChangeRoller(int amount)
     {
         rollerIndex = GetRollerIndexWithOffset(amount);
+        GameManager.instance.CheckRollers();
     }
 
     private int GetRollerIndexWithOffset(int offset)
