@@ -45,6 +45,7 @@ public class RollerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Update the positions of the tiles
         for (int i = 0; i < tileTransforms.Length; i++)
         {
             tileYPositions[i] = Mathf.Lerp(tileYPositions[i], GetTilePositionMultiplier(i) * tileHeight, rollerSpeed * Time.deltaTime);
@@ -54,24 +55,19 @@ public class RollerScript : MonoBehaviour
 
     public void ChangeRoller(int amount)
     {
-        
-        if (amount > 0)        // Bottom Button
+        // Teleport tiles that are going to wrap around
+        if (amount > 0)
         {
-            //int temp = GetTileIndexWithOffset(tileOffset - maxRollerIndex + 1);
-            //tileYPositions[temp] = (GetTilePositionMultiplier(temp) + 1) * tileHeight;
-            int tileToTeleport = GetTileIndexWithOffset(tileOffset);
-            Debug.Log(tileToTeleport);
+            int tileToTeleport = (maxRollerIndex - 1) - GetTileIndexWithOffset(tileOffset);
             tileYPositions[tileToTeleport] = -tileOffset * tileHeight;
-        } else if (amount < 0) // Top Button
+        } else if (amount < 0)
         {
-            //int temp = GetTileIndexWithOffset(tileOffset - maxRollerIndex);
-            //Debug.Log(rollerIndex + " | " + temp);
-            //tileYPositions[temp] = maxRollerIndex * tileHeight;
-
-            
+            int tileToTeleport = (maxRollerIndex - 1) - GetTileIndexWithOffset(tileOffset - maxRollerIndex - 1);
+            tileYPositions[tileToTeleport] = tileOffset * tileHeight;
         }
+
+        // Change index by amount
         rollerIndex = GetTileIndexWithOffset(amount);
-        GameManager.instance.CheckRollers();
     }
 
     public int GetTilePositionMultiplier(int index)

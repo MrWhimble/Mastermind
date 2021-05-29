@@ -265,7 +265,7 @@ MonoBehaviour:
   tileParent: {fileID: 6522505660458196059}
   tilePrefab: {fileID: 40314356164667540, guid: cb506896ea682324185057732288fe84, type: 3}
   tileHeight: 100
-  rollerSpeed: 4
+  rollerSpeed: 8
 --- !u!222 &6522505660397589952
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -6,12 +6,17 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    [SerializeField] private Color[] tileColors;
+
+    [Header("Roller Info")]
     [SerializeField] private Transform rollerParent;
     [SerializeField] private GameObject rollerPrefab;
     [SerializeField] private int numberOfRollers;
-    [SerializeField] private Color[] tileColors;
+    
 
     private RollerScript[] rollers;
+
+    private int[] code;
 
     private void Awake()
     {
@@ -28,6 +33,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < numberOfRollers; i++)
         {
             GameObject go = Instantiate(rollerPrefab, rollerParent);
+            go.name = "RollerParent_" + string.Format("{0:00}", i);
             RectTransform rt = go.GetComponent<RectTransform>();
             rt.anchorMin = new Vector2((float)i / numberOfRollers, 0);
             rt.anchorMax = new Vector2((float)(i + 1) / numberOfRollers, 1);
@@ -37,16 +43,34 @@ public class GameManager : MonoBehaviour
             rollers[i].Initialize(tileColors);
         }
 
+        code = new int[numberOfRollers];
+        GenerateCode();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void GenerateCode()
+    {
+        // Randomise Code
+        for (int i = 0; i < code.Length; i++)
+        {
+            code[i] = Random.Range(0, tileColors.Length);
+        }
+
+        // Make sure it isn't already 
+        bool allTrue = true;
+        for (int i = 0; i < code.Length; i++)
+        {
+            if (code[i] != rollers[i].RollerIndex)
+            {
+                allTrue = false;
+                break;
+            }
+        }
+        if (allTrue)
+            GenerateCode();
+    }
+
+    public void UpdateUI()
     {
         
-    }
-
-    public void CheckRollers()
-    {
-
     }
 }
