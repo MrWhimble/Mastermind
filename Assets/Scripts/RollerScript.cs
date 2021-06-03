@@ -35,9 +35,9 @@ public class RollerScript : MonoBehaviour
         for (int i = 0; i < maxRollerIndex; i++) 
         {
             GameObject go = Instantiate(tilePrefab, tileParent);
-            go.name = "Tile_" + string.Format("{0:00}", i);
+            go.name = string.Format("Tile_{0:00}", i);
             tileTransforms[i] = go.GetComponent<RectTransform>();
-            tileTransforms[i].GetChild(0).GetComponent<Image>().color = colors[i];
+            tileTransforms[i].GetChild(0).GetComponent<Image>().color = colors[((colors.Length - 1) - i + 1) % colors.Length];
             tileYPositions[i] = i;
         }
     }

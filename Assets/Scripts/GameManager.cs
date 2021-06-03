@@ -7,11 +7,14 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     [SerializeField] private Color[] tileColors;
+    public Color[] TileColors { get { return tileColors; } }
 
     [Header("Roller Info")]
     [SerializeField] private Transform rollerParent;
     [SerializeField] private GameObject rollerPrefab;
     [SerializeField] private int numberOfRollers;
+
+    public int NumberOfRollers { get { return numberOfRollers; } }
 
     
     
@@ -35,7 +38,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < numberOfRollers; i++)
         {
             GameObject go = Instantiate(rollerPrefab, rollerParent);
-            go.name = "RollerParent_" + string.Format("{0:00}", i);
+            go.name = string.Format("RollerParent_{0:00}", i);
             RectTransform rt = go.GetComponent<RectTransform>();
             rt.anchorMin = new Vector2((float)i / numberOfRollers, 0);
             rt.anchorMax = new Vector2((float)(i + 1) / numberOfRollers, 1);
@@ -44,6 +47,8 @@ public class GameManager : MonoBehaviour
             rollers[i] = go.GetComponent<RollerScript>();
             rollers[i].Initialize(tileColors);
         }
+
+        StatsManager.instance.InitiateTurns(12);
 
         code = new int[numberOfRollers];
         GenerateCode();
@@ -77,8 +82,10 @@ public class GameManager : MonoBehaviour
         int place = 0; // Correct color, correct place;
 
         int[] colorsInCode = new int[tileColors.Length];
+        int[] rollerCode = new int[numberOfRollers];
         for (int i = 0; i < numberOfRollers; i++)
         {
+            rollerCode[i] = rollers[i].RollerIndex;
             colorsInCode[code[i]]++;
             colorsInCode[rollers[i].RollerIndex]--;
             if (code[i] == rollers[i].RollerIndex)
@@ -86,26 +93,15 @@ public class GameManager : MonoBehaviour
                 place++;
             }
         }
-        //for (int i = 0; i < colorsInCode.Length; i++)
-        //    Debug.Log(colorsInCode[i]);
+
         for (int i = 0; i < colorsInCode.Length; i++)
         {
             color += Mathf.Max(colorsInCode[i], 0);
         }
         color = Mathf.Abs(color - numberOfRollers + place);
 
-
-
-        //Debug.LogFormat("{0} {1} {2} {3} | {4} {5} {6} {7}", code[0], code[1], code[2], code[3], rollers[0].RollerIndex, rollers[1].RollerIndex, rollers[2].RollerIndex, rollers[3].RollerIndex);
-        Debug.LogFormat("Color: {0}", color);
-        Debug.LogFormat("Place: {0}", place);
-        if (place == numberOfRollers)
-            Debug.Log("Correct!!!");
-    }
-
-    public void UpdateUI()
-    {
-        
+        TurnData data = new TurnData(rollerCode, color, place);
+        StatsManager.instance.AddTurn(data);
     }
 }
 
