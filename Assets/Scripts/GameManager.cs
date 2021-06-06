@@ -102,6 +102,19 @@ public class GameManager : MonoBehaviour
 
         TurnData data = new TurnData(rollerCode, color, place);
         StatsManager.instance.AddTurn(data);
+
+        
+    }
+
+
+    public void ResetGame()
+    {
+        GenerateCode();
+        for (int i = 0; i < numberOfRollers; i++)
+        {
+            rollers[i].ResetRoller();
+        }
+        StatsManager.instance.ResetTurns();
     }
 }
 

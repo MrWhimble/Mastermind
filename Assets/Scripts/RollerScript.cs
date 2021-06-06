@@ -79,4 +79,22 @@ public class RollerScript : MonoBehaviour
     {
         return (rollerIndex + maxRollerIndex + offset) % maxRollerIndex;
     }
+
+    public void ResetRoller()
+    {
+        StartCoroutine(ResetRollerEnumerator());
+    }
+
+    IEnumerator ResetRollerEnumerator()
+    {
+        int currentRollerIndex = rollerIndex;
+        for (int i = 0; i < currentRollerIndex; i++)
+        {
+            ChangeRoller(-1);
+
+            yield return new WaitForSecondsRealtime(0.05f);
+        }
+
+        yield return null;
+    }
 }
